@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Love for You</title>
+  <style>
+    html, body {
+      margin: 0; padding: 0;
+      width: 100vw; height: 100vh;
+      overflow: hidden;
+      background: linear-gradient(135deg, #ffe0ec 0%, #aee1f9 100%);
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      user-select: none;
+    }
+    #message {
+      position: absolute;
+      top: 40px; left: 0; width: 100vw;
+      text-align: center; font-size: 2.3em;
+      color: #ff69b4;
+      text-shadow: 1px 1px 6px #fff;
+      z-index: 100;
+      opacity: 0; transition: opacity 1s;
+    }
+    .heart, .follower {
+      position: absolute; width: 36px; height: 36px;
+      pointer-events: none;
+      z-index: 3;
+      animation: fall 6s linear forwards;
+    }
+    .heart {
+      animation-delay: 0s;
+    }
+    .follower {
+      animation-delay: 1s;
+    }
+    @keyframes fall {
+      0% { opacity: 1; transform: translateY(-60px) scale(1);}
+      90% { opacity: 1;}
+      100% { opacity: 0; transform: translateY(110vh) scale(0.7);}
+    }
+    .gift {
+      position: absolute;
+      width: 55px; height: 55px;
+      background: #ffb6c1;
+      border-radius: 10px;
+      border: 3px solid #fff;
+      box-shadow: 0 2px 8px #e3e3e3;
+      z-index: 10;
+      cursor: pointer;
+      overflow: visible;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      animation: popin 0.6s cubic-bezier(.22,1.61,.36,1) forwards;
+    }
+    .gift-lid {
+      position: absolute;
+      width: 55px; height: 22px;
+      top: -18px; left: 0;
+      background: linear-gradient(90deg, #ff69b4 60%, #fff 100%);
+      border-radius: 10px 10px 8px 8px;
+      z-index: 11;
+      transition: transform 0.7s cubic-bezier(.22,1.61,.36,1);
+    }
+    .gift.opened .gift-lid {
+      transform: rotate(-45deg) translateY(-32px) translateX(-16px) scaleX(1.2);
+    }
+    .gift::before, .gift::after {
+      content: '';
+      position: absolute;
+      left: 25px; top: 0;
+      width: 5px; height: 55px;
+      background: #fff;
+      border-radius: 2px;
+    }
+    .gift::before { left: 16px; }
+    .gift::after  { left: 34px; }
+    @keyframes popin {
+      0% { transform: scale(0) }
+      80% { transform: scale(1.1) }
+      100% { transform: scale(1) }
+    }
+    .bird {
+      position: absolute;
+      width: 46px; height: 44px;
+      z-index: 20;
+      pointer-events: none;
+      will-change: transform;
+      animation: birdFly 4s linear forwards;
+    }
+    @keyframes birdFly {
+      0% { opacity: 0; transform: scale(0.7) translateY(30px) }
+      10% { opacity: 1; }
+      100% { opacity: 0; transform: scale(1.1) translateY(-300px) translateX(220px) }
+    }
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 14px;
+      z-index: 99;
+      pointer-events: none;
+      border-radius: 4px;
+      opacity: 0.9;
+      will-change: transform;
+      animation: confettiFly 2.7s cubic-bezier(.27,.6,.38,1) forwards;
+    }
+    @keyframes confettiFly {
+      0%   { opacity: 1; transform: translateY(0) scale(1);}
+      70%  { opacity: 1;}
+      100% { opacity: 0; transform: translateY(-160px) scale(0.7) rotate(90deg);}
+    }
+    .bird-wing {
+      position: absolute;
+      width: 24px; height: 18px;
+      top: 6px; left: 8px;
+      background: #fff;
+      border-radius: 80% 90% 80% 90%/90% 80% 70% 90%;
+      transform: rotate(-12deg);
+      z-index: 1;
+      animation: flap 0.7s infinite alternate;
+    }
+    .bird-wing.right {
+      left: 18px; top: 10px;
+      transform: rotate(22deg) scaleX(-1);
+    }
+    @keyframes flap {
+      0% { transform: rotate(-18deg);}
+      100% { transform: rotate(10deg);}
+    }
+    /* Responsive */
+    @media screen and (max-width: 600px) {
+      #message { font-size: 1.4em;}
+      .gift, .gift-lid { width: 38px; height: 38px;}
+      .gift-lid { height: 14px;}
+      .bird { width: 32px; height: 28px;}
+    }
+  </style>
+</head>
+<body>
+  <div id="message"></div>
+  <script>
+    // --- Utility
+    function rand(a, b) { return a + Math.random() * (b - a); }
+    function randInt(a, b) { return Math.floor(rand(a, b+1)); }
+    function pick(arr) { return arr[randInt(0, arr.length-1)]; }
+    // --- Messages
+    const loveMessages = [
+      "I love you more than all the stars in the sky! 💖",
+      "Every click is a kiss for you! 😘",
+      "You're the best gift in my life! 🎁",
+      "Our love soars like birds in the sky! 🕊️",
+      "You make my heart flutter! 💓",
+      "A sky full of followers can't compare to your love! 🌌",
+      "You are my sunshine! ☀️"
+    ];
+
+    // --- Falling Followers (Hearts)
+    function createFollower() {
+      const el = document.createElement('div');
+      el.className = pick(['heart', 'follower']);
+      el.style.left = rand(0, window.innerWidth - 30) + 'px';
+      el.style.top = '-60px';
+
+      // SVG for heart or follower icon
+      el.innerHTML = pick([
+        `<svg width="36" height="36" fill="none" viewBox="0 0 36 36">
+          <path d="M18 32s-13-7.36-13-17A8.56 8.56 0 0 1 18 7a8.56 8.56 0 0 1 13 8c0 9.64-13 17-13 17z"
+            fill="#ff69b4" stroke="#fff" stroke-width="2"/>
+        </svg>`,
+        `<svg width="36" height="36" fill="none" viewBox="0 0 36 36">
+          <circle cx="18" cy="18" r="16" fill="#ff4081" stroke="#fff" stroke-width="2"/>
+          <text x="18" y="24" font-size="18" text-anchor="middle" fill="#fff" font-family="Arial">&#10084;</text>
+        </svg>`
+      ]);
+      document.body.appendChild(el);
+      setTimeout(()=>el.remove(), 6500);
+    }
+    setInterval(createFollower, 320);
+
+    // --- Confetti
+    const confettiColors = ['#ff69b4', '#fff176', '#81d4fa', '#a5d6a7', '#ff8a65', '#ce93d8'];
+    function createConfetti(x, y, count=22) {
+      for (let i=0; i<count; ++i) {
+        const conf = document.createElement('div');
+        conf.className = 'confetti';
+        conf.style.left = (x + rand(-25,25))+'px';
+        conf.style.top = (y + rand(-10,10))+'px';
+        conf.style.background = pick(confettiColors);
+        conf.style.transform = `rotate(${rand(-80,80)}deg)`;
+        conf.animate([
+          {transform:`translateY(0) scale(1) rotate(${rand(-80,80)}deg)`, opacity:1 },
+          {transform:`translateY(-${rand(100, 220)}px) scale(${rand(0.7,1.2)}) rotate(${rand(-180,180)}deg)`, opacity:0 }
+        ], { duration: rand(1700,2800), fill: "forwards" });
+        document.body.appendChild(conf);
+        setTimeout(()=>conf.remove(), 3200);
+      }
+    }
+
+    // --- Birds
+    function createBird(x, y, direction="right") {
+      const bird = document.createElement('div');
+      bird.className = 'bird';
+      bird.style.left = x + 'px';
+      bird.style.top = y + 'px';
+      if(direction==="left") bird.style.transform = "scaleX(-1)";
+
+      bird.innerHTML = `
+        <svg width="46" height="44" viewBox="0 0 46 44" fill="none">
+          <ellipse cx="23" cy="24" rx="18" ry="11" fill="#fff"/>
+          <ellipse cx="20" cy="17" rx="7" ry="5" fill="#90caf9"/>
+          <ellipse cx="30" cy="20" rx="5" ry="3" fill="#90caf9"/>
+          <circle cx="17" cy="16" r="2" fill="#222"/>
+          <polygon points="13,19 10,18 13,21" fill="#ffeb3b"/>
+        </svg>
+        <div class="bird-wing"></div>
+        <div class="bird-wing right"></div>
+      `;
+      document.body.appendChild(bird);
+
+      const deltaX = direction==="right" ? rand(120, 220) : -rand(120, 220);
+      const deltaY = -rand(120, 250);
+      bird.animate([
+        {opacity:0, transform: `scale(0.7) translateY(30px)`},
+        {opacity:1, transform: `scale(1) translateY(-20px)`},
+        {opacity:1, transform: `scale(1.1) translateY(${deltaY}px) translateX(${deltaX}px)`},
+        {opacity:0, transform: `scale(0.8) translateY(${deltaY-40}px) translateX(${deltaX*1.2}px)`}
+      ], {duration: rand(2200,3900), fill:"forwards"});
+      setTimeout(()=>bird.remove(), 4000);
+    }
+
+    // --- Gifts
+    const giftColors = ['#ffb6c1', '#ffd6e0', '#c5e1a5', '#b39ddb', '#f8bbd0'];
+    function createGift(x, y) {
+      const gift = document.createElement('div');
+      gift.className = 'gift';
+      gift.style.left = (x-27)+'px';
+      gift.style.top = (y-27)+'px';
+      gift.style.background = pick(giftColors);
+
+      // Gift Lid
+      const lid = document.createElement('div');
+      lid.className = 'gift-lid';
+      lid.style.background = `linear-gradient(90deg, ${pick(giftColors)} 60%, #fff 100%)`;
+      gift.appendChild(lid);
+
+      // Gift click event (only once)
+      let opened = false;
+      gift.addEventListener('click', function(e){
+        if(opened) return;
+        opened = true;
+        gift.classList.add("opened");
+        // 1. Show confetti
+        createConfetti(x, y, randInt(18,26));
+        // 2. Birds fly out
+        for(let i=0;i<randInt(2,4);++i)
+          setTimeout(()=>createBird(x+rand(-15,15), y+rand(-18,18), pick(["left","right"])), i*250);
+        // 3. Show sweet message
+        showMessage(pick(loveMessages));
+        // Remove gift after a while
+        setTimeout(()=>gift.remove(), 3500);
+      });
+      // Animate the gift popping in
+      document.body.appendChild(gift);
+      setTimeout(()=>gift.remove(), 6000);
+    }
+
+    // --- Show Sweet Message
+    let lastMsgTime = 0;
+    function showMessage(msg) {
+      const mbox = document.getElementById('message');
+      mbox.textContent = msg;
+      mbox.style.opacity = 1;
+      lastMsgTime = Date.now();
+      setTimeout(()=>{if(Date.now()-lastMsgTime>1200) mbox.style.opacity=0;}, 1800);
+    }
+
+    // --- Handle Clicks: Gifts, More magic!
+    document.body.addEventListener('click', function(e){
+      if(e.target.classList.contains("gift-lid") || e.target.classList.contains("gift")) return;
+      createGift(e.clientX, e.clientY);
+      // Sometimes, spawn bonus birds, hearts, or confetti
+      if(Math.random()>0.5) createConfetti(e.clientX, e.clientY, randInt(12,19));
+      if(Math.random()>0.7) for(let i=0;i<randInt(1,3);++i)
+        setTimeout(()=>createBird(e.clientX+rand(-30,30), e.clientY+rand(-30,30), pick(["left","right"])), i*320);
+      if(Math.random()>0.6) createFollower();
+      showMessage(pick(loveMessages));
+    });
+
+    // --- Spawn random gifts falling from the sky for extra magic
+    setInterval(()=> {
+      if(Math.random()<0.32)
+        createGift(randInt(40, window.innerWidth-40), -15);
+    }, 1800);
+    // --- Responsive: Recalculate on resize
+    window.addEventListener('resize', ()=>{
+      // Optionally re-balance fall positions, skip for simplicity
+    });
+  </script>
+</body>
+</html>
